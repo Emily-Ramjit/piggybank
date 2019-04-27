@@ -82,11 +82,42 @@
           RECENT TRANSACTIONS
           <hr/>
           </div>
-          
-          <BC-table :rows='transactionTable.rows'
+          <table style="width:100%">
+              <tr>
+                <th>Id</th>
+                 <th> Transaction Date </th>
+                <th>Organization</th>
+                 <th>Item</th>
+                <th >Amount</th>
+              </tr>
+              <tr>
+                <td>0</td>
+                <td>4/26/2019</td>
+                <td>Business1</td>
+                <td>Item1</td>
+                <td>$5.00</td>
+              </tr>
+             <tr>
+                <td>1</td>
+                <td>4/23/2019</td>
+                <td>Business2</td>
+                <td>Item3</td>
+                <td>$10.00</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>4/21/2019</td>
+                <td>Business3</td>
+                <td>Item3</td>
+                <td>$3.00</td>
+              </tr>
+            </table>
+
+
+          <!-- <BC-table :rows='transactionTable.rows'
                     :headings='transactionTable.headings'
                     >
-          </BC-table>
+          </BC-table> -->
 
         </BC-card>
         </div>
