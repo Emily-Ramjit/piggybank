@@ -12,20 +12,6 @@
      <template slot='utility'>
     </template>
 
-
-    <!-- <template slot='horizontal-menu-primary'> -->
-      <!-- MENU ITEMS-->
-
-
-    <!-- </template> -->
-
-    <!-- VERTICAL SIDEBAR MENU  -->
-    <!-- <template slot='vertical-menu-primary'>
-      <BC-menu-item
-        title='Home'
-        href='/Home'
-      ></BC-menu-item>
-    </template> -->
   </application-layout>
 
 </template>
