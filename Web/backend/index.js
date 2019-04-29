@@ -8,10 +8,12 @@ var cors = require('cors');
 // var sqlDriver = require('mysql');
 var path = require('path');
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('piggy_bank', 'root','piggybank',{
+const sequelize = new Sequelize('piggy_bank', 'root','newyork96',{
   host: 'localhost',
   dialect: 'mysql'
 });
+app.use(cors());
+
 const api = require(path.join(__dirname,'/routes'));
 
 /*
@@ -26,6 +28,13 @@ setup mysql on your machine
 
 app.use(express.json());
 app.use('/api',api);
+
+app.all('/', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+ });
+
 
 sequelize.authenticate().then(()=>{
   console.log("[Database]: Connected Established!");
@@ -51,9 +60,6 @@ app.use('*',(req,res)=>{
   // res.status(200).redirect('/');
   res.sendFile(path.join(__dirname, `../src/${PATH_DIR}/index.html`));
 });
-
-
-
 
 
 

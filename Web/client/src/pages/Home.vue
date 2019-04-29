@@ -17,8 +17,7 @@
           <hr/>
 
           <p>
-          <!-- {{this.user.balance}} -->
-           Wallet - $10.00
+          Wallet - ${{this.userBalance}}
             </p>
           </div>
         </BC-card>
@@ -57,18 +56,15 @@
           <hr/>
           <p>
           <b-col>
-             <!-- {{this.user.balance}} -->
-              Wallet Balance - $5.00
+            Wallet Balance - ${{this.userBalance}}
           </b-col>
 
           <b-col>
-              <!-- {{this.search.itemSelect.value}} -->
-              Item Price - $2.00
+             Item Price - ${{this.search.itemSelect.value}}
           </b-col>
           <hr/>
           <b-col>
-            <!-- {{this.userNewBalance}} -->
-              New Balance - $3.00
+            New Balance - ${{this.userNewBalance}}
           </b-col>
           </p>
 
@@ -94,30 +90,13 @@
                  <th>Item</th>
                 <th >Amount</th>
               </tr>
-            <!-- <v-for item in transactionTable.rows >
-              <tr>
-                <td>{{item.id}}</td>
-                <td>{{item.date}}</td>
-                <td>{{item.business}}</td>
-                <td>{{item.item}}</td>
-                <td>{{item.amount}}</td>
-              </tr> -->
-             <tr>
-                <td>1</td>
-                <td>4/23/2019</td>
-                <td>Business2</td>
-                <td>Item3</td>
-                <td>$10.00</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>4/21/2019</td>
-                <td>Business3</td>
-                <td>Item3</td>
-                <td>$3.00</td>
+               <tr v-for="item in rows">
+                  <td v-for="(value, key) in item">
+                {{value}}
+
+              </td>
               </tr>
             </table>
-
 
           <!-- <BC-table :rows='transactionTable.rows'
                     :headings='transactionTable.headings'
@@ -137,12 +116,12 @@
 
 <script>
 
-import api from '@/api/PiggyBank'
+import api from '@/api/api'
 
 export default {
 
   mounted () {
-
+    this.fetch()
   },
 
   data () {
@@ -163,21 +142,9 @@ export default {
         ],
         sortBy: 'Total',
         sortDirection: 'desc',
-        rows: [ {
-          Id: '1',
-          Business: 'test',
-          Item: 'test Item',
-          Amount: '$5.00',
-          TransactionDate: '3/30/2019'
-        },
-        {
-          Id: '1',
-          Business: 'test',
-          Item: 'test Item',
-          Amount: '$5.00',
-          TransactionDate: '3/30/2019'
-        }]
+        rows: []
       },
+      rows: [],
       search: {
         businessSelect: {
           placeholder: 'Select a Business..',
@@ -195,6 +162,7 @@ export default {
         }
       },
       date: new Date().toLocaleDateString(),
+      userBalance: 0,
       userNewBalance: 0
     }
   },
@@ -202,21 +170,23 @@ export default {
     fetch () {
       this.rows = [ {
           Id: '1',
-          Business: 'test',
-          Item: 'test Item',
-          Amount: '$5.00',
-          TransactionDate: '3/30/2019'
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
         },
         {
           Id: '1',
-          Business: 'test',
-          Item: 'test Item',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
           Amount: '$5.00',
-          TransactionDate: '3/30/2019'
         }]
-        api.getUserInfo (userId)
+        var userId = 1
+        api.getUserInfo(userId)
           .then(res => {
-            // this.user = res.data
+           console.log(res)
+           this.userBalance = res.data[0].balance
         })
         api.getUserTransactions (userId) 
           .then(res => {
@@ -225,21 +195,24 @@ export default {
 
         api.getBusinesses()
         .then(res => {  
-          this.search.businessSelect.options = res.data.businesses.map((business) => {
+          console.log(res)
+          this.search.businessSelect.options = res.data.map((business) => {
               return {
-                label: business.name,
-                value: business.id
+                label: business.business_name,
+                value: business.b_id
               }
           })
         })
     },
-    handleBusinessSelect (businessId){
+    handleBusinessSelect () {
       // set items
+       var businessId = this.search.businessSelect.value
         api.getItems(businessId)
         .then(res => {  
-          this.search.itemSelect.options = res.data.items.map((item) => {
+          console.log(res)
+          this.search.itemSelect.options = res.data.map((item) => {
               return {
-                label: item.name,
+                label: item.item_name,
                 value: item.price
               }
           })
@@ -247,12 +220,23 @@ export default {
     },  
     handleItemSelect () {
       // set new balance
-      this.userNewBalance = this.userBalance - this.itemPrice
+      this.userNewBalance = this.userBalance - this.search.itemSelect.value
     },
     CreateTransaction () {
-      // var params = {
-      //   userId = this.user.id
-      // }
+      var TransactionHash = 'randomvalue'
+      var BlockId = 'randomBlockValue'
+      var date = Date()
+
+      var params = {
+        itemId: this.item.id, 
+        userId: this.user.id,
+        businessId: this.businessSelect.value, 
+        transactionHash: TransactionHash,
+        hashVersion: TransactionHash,
+        blockId: BlockId,
+        transactionDateTime: date,
+        newBalance: this.userNewBalance
+      }
       api.addTransaction(params) 
         .then(res => {
           this.fetch()

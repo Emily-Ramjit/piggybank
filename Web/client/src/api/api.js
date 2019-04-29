@@ -4,18 +4,19 @@ axios.defaults.baseURL = 'localhost:8080'
 
 export default {
   getBusinesses () {
-    return axios.get(`http://localhost:8080/getBusinesses`)
+    return axios.get(`http://localhost:8080/api/getBusinesses`)
   },
-  getItems (params) {
-    return axios.get(`http://localhost:8080/getBusinesses`, { params: params })
+  getItems (businessId) {
+    return axios.get(`http://localhost:8080/api/getItems/${businessId}`)
   },
   getUserInfo (userId) {
-    return axios.get(`http://localhost:8080/getUserInfo/${userId}`)
+    console.log(userId)
+    return axios.get(`http://localhost:8080/api/getUserInfo/${userId}`)
   },
   getUserTransactions (userId) {
-    return axios.get(`http://localhost:8080/getUserTrans/${userId}`)
+    return axios.get(`http://localhost:8080/api/getUserTrans/${userId}`)
   },
   addTransaction (params) {
-    return axios.get(`http://localhost:8080/newTransaction`, { params: params })
+    return axios.post(`http://localhost:8080/api/newTransaction`, params)
   }
 }
