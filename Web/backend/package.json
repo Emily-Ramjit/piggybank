@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend server for piggybank",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karkay/piggybank.git"
+  },
+  "author": "kent feng (karkay)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karkay/piggybank/issues"
+  },
+  "homepage": "https://github.com/karkay/piggybank#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "mysql": "^2.17.1",
+    "path": "^0.12.7"
+  }
+}
