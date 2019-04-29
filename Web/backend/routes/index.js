@@ -6,16 +6,8 @@ const sequelize = new Sequelize('piggy_bank', 'root','piggybank',{
   dialect: 'mysql'
 });
 
+//this function executes any raw queries it is passed
 async function executeQuery(queryString){
-  // let res = conn.query(queryString,(err,res)=>{
-  //   if(err) throw err;
-  //   console.log("[Database]: Output =>");
-  //   console.log(res);
-  // });
-
-  // let result = await res;
-  // return result;
-
   let prom = sequelize.query(queryString).then((results)=>{
     console.log("[Query Results]: ",results);
     return results;
@@ -26,9 +18,7 @@ async function executeQuery(queryString){
   return queryResp;
 }
 
-// //set up routes
-// app.use('/api',checkAuth,api);
-
+//this route returns the entire user record from the user table given a userId
 router.get('/getUserInfo/:userId',(req,res)=>{
   const userId = req.params.userId;
   console.log("userId: ", userId);
@@ -40,6 +30,7 @@ router.get('/getUserInfo/:userId',(req,res)=>{
 
 });
 
+//this route returns the users transactions given the user id
 router.get('/getUserTrans/:userId',(req,res)=>{
     const userId = req.params.userId;
     res.send(`getUserTrans for ${userId}`)
@@ -85,6 +76,7 @@ router.get('/getUserTrans/:userId',(req,res)=>{
 
 });
 
+//this route returns the list of businesses in the business table.
 router.get('/getBusinesses',(req,res)=>{
   const formattedQuery = `SELECT b_id, business_name FROM business;`;
   const businesses = executeQuery(formattedQuery);
@@ -93,6 +85,7 @@ router.get('/getBusinesses',(req,res)=>{
 
 });
 
+//this route returns the list of items associated to the business id.
 router.get('/getItems/:businessId',(req,res)=>{
 	const businessId = req.params.businessId;
   const formattedQuery = `SELECT item_id, item_name, price FROM item WHERE b_id = ${businessId};`;
@@ -102,6 +95,7 @@ router.get('/getItems/:businessId',(req,res)=>{
 
 });
 
+//this route gets the user's balance given the user's id.
 router.get('/getBal/:userId',(req,res)=>{
 	const userId = req.params.userId;
   const formattedQuery = `SELECT balance FROM user WHERE u_id = ${userId};`;
@@ -110,6 +104,7 @@ router.get('/getBal/:userId',(req,res)=>{
   console.log("getBal: ", balanceResult);
 });
 
+//this route creates and inserts a new transaction, updates user balance, creates a new block record and returns the result of that query.
 router.post('/newTransaction',(req,res)=>{
   let {itemId, 
       userId,

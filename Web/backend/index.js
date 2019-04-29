@@ -14,25 +14,19 @@ const sequelize = new Sequelize('piggy_bank', 'root','piggybank',{
 });
 const api = require(path.join(__dirname,'/routes'));
 
-//setup mysql on your machine
-// 1. download mysql
-// 2. initialize mysqld: mysqld --intialize
-// 3. copy temp creds and login to mysql: mysql -u root -h localhost -p 
-// 4. reset password inside mysql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'piggybank';
-// 5. ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'piggybank';
-// 6. create database piggy_bank;
-
+/*
+setup mysql on your machine
+1. download mysql
+2. initialize mysqld: mysqld --intialize
+3. copy temp creds and login to mysql: mysql -u root -h localhost -p 
+4. reset password inside mysql: ALTER USER 'root'@'localhost' IDENTIFIED BY 'piggybank';
+5. ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'piggybank';
+6. create database piggy_bank;
+*/
 
 app.use(express.json());
 app.use('/api',api);
 
-
-
-//attempt to connect
-// conn.connect((err)=>{
-//   if(err) throw err;
-//   console.log("[Database]: Connected Established!");
-// });
 sequelize.authenticate().then(()=>{
   console.log("[Database]: Connected Established!");
 }).catch((err)=>{
