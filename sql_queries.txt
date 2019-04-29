@@ -1,0 +1,57 @@
+04/28/19 Steven Santana
+
+Note: We should make ( and state) the assumption that names may not be unique
+	(but user IDs will be).
+
+1. "Get Balance"
+
+a. "Get all but the u_id"
+SELECT first_name, middle_initial,last_name, balance FROM user WHERE u_id = userId;
+
+b. "Get just the Balance"
+SELECT balance FROM user WHERE u_id = userId;
+
+c. "Get the whole user record"
+SELECT * FROM user WHERE u_id = userId;
+
+
+2. "Get User Transactions"
+Note: We could swap the full name with the user ID OR make a Username field that must be
+	unique.
+
+SELECT UT.first_name, UT.middle_initial, UT.last_name, UT.transaction_date_time,
+	BI.business_name, BI.item_name, BI.price 
+
+	FROM (SELECT U.first_name, U.middle_initial, U.last_name, 
+		T.item_id, T.u_id, T.b_id, T.transaction_date_time 
+		FROM user U JOIN transaction T ON U.u_id = T.u_id) UT
+	JOIN (B.b_id, B.business_name, I.item_id, I.item_name, I.price
+		FROM business B JOIN item I ON B.b_id = I.b_id) BI
+		ON UT.item_id = BI.item_id AND UT.b_id = BI.b_id 
+WHERE u_id = userId;
+
+3. "Get businesses"
+SELECT b_id, business_name FROM business;
+
+Note:  This is if we are holding onto the id to gather a business's items.
+
+4. "Get items"
+
+SELECT item_id, item_name, price FROM item WHERE b_id = businessId;
+
+5. "Transaction statements"
+
+a. Insertion
+INSERT INTO transaction(item_id, u_id, b_id, transaction_hash, 
+	hash_version, block_id, transaction_date_time) 
+	values(itemId, userId, businessId, transactionHash,
+	hashVersion, blockId, transactionDateTime);
+
+b. Getting Block stuff for Transaction record
+Note: Gets the lastest block. This is probably not how its meant to be handled.
+
+SELECT block_id, created_date_time FROM block ORDER BY block_id DESC LIMIT 1;
+
+c. Updating User's Balance, post-transaction
+UPDATE user SET balance = newBalance WHERE u_id = UserId;
+

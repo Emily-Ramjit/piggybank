@@ -1,0 +1,65 @@
+04/29/19 Steven Santana
+
+// *******************************
+// ** Table Creation Statements **
+// *******************************
+
+
+CREATE TABLE user(
+    u_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    first_name VARCHAR(30),
+    middle_initial VARCHAR(1),
+    last_name VARCHAR(30),
+    balance DOUBLE);
+
+//Notes
+1. Could add a "username" field to make the get transactions statement less
+	ugly.
+---
+
+CREATE TABLE business(
+    b_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    business_name VARCHAR(32));
+
+---
+
+CREATE TABLE item(
+    item_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    item_name VARCHAR(64),
+    price DOUBLE,
+    b_id INT NOT NULL,
+    FOREIGN KEY (b_id) REFERENCES business(b_id));
+
+---
+
+CREATE TABLE transaction_type(
+    ttype_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    ttype_description VARCHAR(32));
+
+---
+
+CREATE TABLE block(
+    block_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    previous_block_id INT NOT NULL,
+    transaction_count INT,
+    block_hash VARCHAR(256),
+    previous_block_hash VARCHAR(256),
+    created_date_time DATETIME DEFAULT CURRENT_TIMESTAMP);
+
+---
+
+CREATE TABLE transaction(
+    t_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    ttype_id INT,
+    item_id INT NOT NULL,
+    u_id INT NOT NULL,
+    b_id INT NOT NULL,
+    transaction_hash VARCHAR(32),
+    hash_version INT,
+    block_id INT,
+    transaction_date_time DATETIME,
+    FOREIGN KEY (ttype_id) REFERENCES transaction_type(ttype_id),
+    FOREIGN KEY (item_id) REFERENCES item (item_id),
+    FOREIGN KEY (u_id) REFERENCES user(u_id),
+    FOREIGN KEY (b_id) REFERENCES business(b_id),
+    FOREIGN KEY (block_id) REFERENCES block(block_id));
