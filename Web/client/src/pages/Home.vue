@@ -17,6 +17,7 @@
           <hr/>
 
           <p>
+          <!-- {{this.user.balance}} -->
            Wallet - $10.00
             </p>
           </div>
@@ -56,20 +57,23 @@
           <hr/>
           <p>
           <b-col>
+             <!-- {{this.user.balance}} -->
               Wallet Balance - $5.00
           </b-col>
 
           <b-col>
+              <!-- {{this.search.itemSelect.value}} -->
               Item Price - $2.00
           </b-col>
           <hr/>
           <b-col>
+            <!-- {{this.userNewBalance}} -->
               New Balance - $3.00
           </b-col>
           </p>
 
           <div class="pt-2">
-          <BC-button class="float-right"> Confirm </BC-button>   
+          <BC-button class="float-right" @click.native="CreateTransaction()"> Confirm </BC-button>   
           </div>
 
         </BC-card>
@@ -90,13 +94,14 @@
                  <th>Item</th>
                 <th >Amount</th>
               </tr>
+            <!-- <v-for item in transactionTable.rows >
               <tr>
-                <td>0</td>
-                <td>4/26/2019</td>
-                <td>Business1</td>
-                <td>Item1</td>
-                <td>$5.00</td>
-              </tr>
+                <td>{{item.id}}</td>
+                <td>{{item.date}}</td>
+                <td>{{item.business}}</td>
+                <td>{{item.item}}</td>
+                <td>{{item.amount}}</td>
+              </tr> -->
              <tr>
                 <td>1</td>
                 <td>4/23/2019</td>
@@ -132,7 +137,7 @@
 
 <script>
 
-// import api from '@/api/PiggyBank'
+import api from '@/api/PiggyBank'
 
 export default {
 
@@ -182,38 +187,15 @@ export default {
           error: null
         },
         itemSelect: {
-          placeholder: 'Select a Business..',
+          placeholder: 'Select a Item..',
           options: [{ label: 'testitem1', value: 'testitem1' }],
           value: null,
           disabled: false,
           error: null
-        },
-      },
-      fields: {
-        Category: {
-          key: 'Category',
-          label: 'Category',
-          sortable: true
-        },
-        Description: {
-          key: 'Description',
-          label: 'Description',
-          sortable: true
-        },
-        Date: {
-          key: 'Date',
-          label: 'Incident Date',
-          sortable: true
         }
       },
-      items: [
-        { Category: 'Rape', Number_of_Occurences: 3, Date: '3/20/2019' },
-        { Category: 'Assault', Number_of_Occurences: 5, Date: '3/20/2019' },
-        { Category: 'Murder', Number_of_Occurences: 1, Date: '3/20/2019' },
-        { Category: 'Robbery', Number_of_Occurences: 3, Date: '3/20/2019' }
-      ],
-
-      date: new Date().toLocaleDateString()
+      date: new Date().toLocaleDateString(),
+      userNewBalance: 0
     }
   },
   methods: {
@@ -232,23 +214,49 @@ export default {
           Amount: '$5.00',
           TransactionDate: '3/30/2019'
         }]
-      // get Businesses 
-      // set Businesses
+        api.getUserInfo (userId)
+          .then(res => {
+            // this.user = res.data
+        })
+        api.getUserTransactions (userId) 
+          .then(res => {
+             // this.transactionTable.rows = res.data
+          })
 
-      // get Items
-      // set Items
-
-      // get User Balance
-      // set User Balance
-
-      // get User Transactions
-      // set User Transactions 
+        api.getBusinesses()
+        .then(res => {  
+          this.search.businessSelect.options = res.data.businesses.map((business) => {
+              return {
+                label: business.name,
+                value: business.id
+              }
+          })
+        })
     },
-    handleBusinessSelect (){
+    handleBusinessSelect (businessId){
       // set items
+        api.getItems(businessId)
+        .then(res => {  
+          this.search.itemSelect.options = res.data.items.map((item) => {
+              return {
+                label: item.name,
+                value: item.price
+              }
+          })
+        })
     },  
     handleItemSelect () {
       // set new balance
+      this.userNewBalance = this.userBalance - this.itemPrice
+    },
+    CreateTransaction () {
+      // var params = {
+      //   userId = this.user.id
+      // }
+      api.addTransaction(params) 
+        .then(res => {
+          this.fetch()
+        })
     }
   }
   
