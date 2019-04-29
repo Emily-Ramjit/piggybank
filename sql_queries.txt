@@ -21,11 +21,10 @@ Note: We could swap the full name with the user ID OR make a Username field that
 
 SELECT UT.first_name, UT.middle_initial, UT.last_name, UT.transaction_date_time,
 	BI.business_name, BI.item_name, BI.price 
-
 	FROM (SELECT U.first_name, U.middle_initial, U.last_name, 
 		T.item_id, T.u_id, T.b_id, T.transaction_date_time 
 		FROM user U JOIN transaction T ON U.u_id = T.u_id) UT
-	JOIN (B.b_id, B.business_name, I.item_id, I.item_name, I.price
+	JOIN (SELECT B.b_id, B.business_name, I.item_id, I.item_name, I.price
 		FROM business B JOIN item I ON B.b_id = I.b_id) BI
 		ON UT.item_id = BI.item_id AND UT.b_id = BI.b_id 
 WHERE u_id = userId;
