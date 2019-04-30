@@ -332,7 +332,8 @@ export default {
         previous_block_hash: this.previous_hash,
         businessId: this.businessSelect.value, 
         transactionDateTime: date,
-        newBalance: this.userNewBalance
+        newBalance: this.userNewBalance,
+        previousHash: this.previous_hash
       }
       api.addTransaction(params) 
         .then(res => {

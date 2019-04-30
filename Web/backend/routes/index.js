@@ -110,7 +110,8 @@ router.post('/newTransaction',(req,res)=>{
       user_balance,
       businessId,
       transactionDateTime,
-      newBalance} = req.body;
+      newBalance,
+      previousHash} = req.body;
 
    
    //const transactionHash = generate(user_first_name, user_last_name, user_balance, transactionDateTime)
@@ -124,7 +125,8 @@ router.post('/newTransaction',(req,res)=>{
     `UPDATE user SET balance = "${newBalance}" WHERE u_id = "${userId}";
     `;
 
-    const blockQuery = ``;
+    const blockQuery = `INSERT INTO block(previous_block_hash, transaction_hash, hash_version, transaction_date_time)
+    values("${previousHash}, ${transactionHash}", "${hashVersion}", "${transactionDateTime}");`;
 
   //insert into transaction table
   executeQuery(formattedQuery).then(insertResult =>{
