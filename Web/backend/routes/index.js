@@ -91,14 +91,20 @@ router.get('/getBal/:userId',(req,res)=>{
 
 //this route creates and inserts a new transaction, updates user balance, creates a new block record and returns the result of that query.
 router.post('/newTransaction',(req,res)=>{
+  
   let {itemId, 
       userId,
+      user_first_name,
+      user_last_name,
+      user_balance,
       businessId,
-      transactionHash,
-      hashVersion,
-      blockId,
       transactionDateTime,
       newBalance} = req.body;
+
+   
+   //const transactionHash = generate(user_first_name, user_last_name, user_balance, transactionDateTime)
+   //const hashVersion = generate(user_first_name, user_last_name, user_balance, transactionDateTime)
+  
   
   const formattedQuery = `INSERT INTO transaction(item_id, u_id, b_id, transaction_hash,hash_version, block_id,transaction_date_time) 
   values("${itemId}", "${userId}", "${businessId}", "${transactionHash}","${hashVersion}", "${blockId}", "${transactionDateTime}");`;

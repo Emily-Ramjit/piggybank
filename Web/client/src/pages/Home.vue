@@ -77,7 +77,7 @@
 
       </BC-layout-section>
         <div class="transaction">
-         <BC-card style="min-width: 260%;">
+         <BC-card style="min-width: 245%;">
           <div class="transactions">
           RECENT TRANSACTIONS
           <hr/>
@@ -181,6 +181,97 @@ export default {
           Business: 'testBusiness2',
           Item: 'testItem2',
           Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
+        },{
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness',
+          Item: 'testItem',
+          Amount: '$5.00'
+        },
+        {
+          Id: '1',
+          TransactionDate: '3/30/2019',
+          Business: 'testBusiness2',
+          Item: 'testItem2',
+          Amount: '$5.00',
         }]
         var userId = 1
         api.getUserInfo(userId)
@@ -230,10 +321,10 @@ export default {
       var params = {
         itemId: this.item.id, 
         userId: this.user.id,
+        user_first_name: this.user.first_name,
+        user_last_name: this.user.last_name,
+        user_balance: this.user.balance,
         businessId: this.businessSelect.value, 
-        transactionHash: TransactionHash,
-        hashVersion: TransactionHash,
-        blockId: BlockId,
         transactionDateTime: date,
         newBalance: this.userNewBalance
       }
