@@ -18,5 +18,8 @@ export default {
   },
   addTransaction (params) {
     return axios.post(`http://localhost:8080/api/newTransaction`, params)
+  },
+  getPreviousHash () {
+    return axios.get(`http://localhost:8080/api/getPreviousHash`)
   }
 }

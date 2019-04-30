@@ -89,6 +89,17 @@ router.get('/getBal/:userId',(req,res)=>{
  
 });
 
+router.get('/getPreviousHash',(req,res)=>{
+	const userId = req.params.userId;
+  const formattedQuery = `SELECT previous_block_hash FROM block order by block_id desc
+  LIMIT 1`;
+  executeQuery(formattedQuery).then((previousHash)=>{
+     res.send(previousHash[0]);
+    console.log("getPreviousHash: ", previousHash[0]);
+  });
+ 
+});
+
 //this route creates and inserts a new transaction, updates user balance, creates a new block record and returns the result of that query.
 router.post('/newTransaction',(req,res)=>{
   

@@ -294,6 +294,11 @@ export default {
               }
           })
         })
+        api.getPreviousHash()
+        .then(res => {
+          this.previous_hash = res.data[0].previous_block_hash
+          console.log(this.previous_hash)
+        })
     },
     handleBusinessSelect () {
       // set items
@@ -324,6 +329,7 @@ export default {
         user_first_name: this.user.first_name,
         user_last_name: this.user.last_name,
         user_balance: this.user.balance,
+        previous_block_hash: this.previous_hash,
         businessId: this.businessSelect.value, 
         transactionDateTime: date,
         newBalance: this.userNewBalance
