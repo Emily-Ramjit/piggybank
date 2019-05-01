@@ -114,9 +114,28 @@ router.post('/newTransaction',(req,res)=>{
       previousHash} = req.body;
 
    
-   //const transactionHash = generate(user_first_name, user_last_name, user_balance, transactionDateTime)
-   //const hashVersion = generate(user_first_name, user_last_name, user_balance, transactionDateTime)
-  
+   function generateHash(user_first_name, user_last_name, user_balance, transactionDateTime) {
+
+    hashvalue = user_first_name + user_last_name + toString(user_balance) + toString(transactionDateTime); 
+
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let finalhash = cipher.update(hashvalue);
+    finalhash = Buffer.concat([finalhash, cipher.final()]);
+    return finalhash.toString('hex');
+   
+   }   
+   
+	
+	
+
+   //const transactionHash = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
+   //const hashVersion = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
+   
+	
+	
+	
+	
+	
   
   const formattedQuery = `INSERT INTO transaction(item_id, u_id, b_id, transaction_hash,hash_version, block_id,transaction_date_time) 
   values("${itemId}", "${userId}", "${businessId}", "${transactionHash}","${hashVersion}", "${blockId}", "${transactionDateTime}");`;
