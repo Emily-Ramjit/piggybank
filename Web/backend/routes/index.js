@@ -41,15 +41,12 @@ router.get('/getUserTrans/:userId',(req,res)=>{
     const userId = req.params.userId;
     
     //select user transactions with joins from tables
-    const formattedQuery = `SELECT UT.t_id, UT.first_name, UT.middle_initial, UT.last_name, UT.transaction_date_time,
-  BI.business_name, BI.item_name, BI.price 
-  FROM (SELECT U.first_name, U.middle_initial, U.last_name, 
-    T.t_id, T.item_id, T.u_id, T.b_id, T.transaction_date_time 
-    FROM user U JOIN transaction T ON U.u_id = T.u_id) UT
-  JOIN (SELECT B.b_id, B.business_name, I.item_id, I.item_name, I.price
-    FROM business B JOIN item I ON B.b_id = I.b_id) BI
-    ON UT.item_id = BI.item_id AND UT.b_id = BI.b_id 
-WHERE u_id = "${userId}" order by UT.t_id asc;`;
+    const formattedQuery = `select t.t_id, u.first_name, u.middle_initial, u.last_name, bc.block_hash, bc.previous_block_hash, t.t_id, bc.created_date_time, i.item_name, b.business_name, i.price from transaction t 
+    inner join business b on t.b_id = b.b_id 
+    inner join item i on t.item_id = i.item_id
+    inner join block bc on t.block_id = bc.block_id
+    inner join user u on t.u_id = u.u_id
+     where u.u_id = "${userId}" order by t.t_id asc;`;
     executeQuery(formattedQuery).then(userTrans=>{
       res.send(userTrans[0]);
       console.log(`getUserTrans for ${userId}`);

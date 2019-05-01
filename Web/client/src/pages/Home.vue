@@ -10,7 +10,7 @@
       <BC-layout-section>
         <BC-card style="min-width: 200%;">
           <div class="balances">
-          YOUR BALANCE
+          ACCOUNT BALANCE
                </div>
           <p>
            As of {{date}} </p>
@@ -97,13 +97,37 @@
               </td>
               </tr>
             </table>
+         </BC-card>
+
+      <div class="pt-3">
+         <BC-card style="min-width: 130%;">
+          <div class="block">
+          BLOCK GENERATIONS
+          <hr/>
+          </div>
+
+             <table style="width:100%">
+              <tr>
+                <th>Block Hash</th>
+                 <th> Previous Block Hash</th>
+              </tr>
+               <tr v-for="item in rows">
+                  <td v-for="(value, key) in item">
+                <div class="truncate">
+                {{value}}
+                </div>
+
+              </td>
+              </tr>
+            </table>
+         </BC-card>
+      </div>
 
           <!-- <BC-table :rows='transactionTable.rows'
                     :headings='transactionTable.headings'
                     >
           </BC-table> -->
 
-        </BC-card>
         </div>
 
        <BC-layout-section>
@@ -186,15 +210,21 @@ export default {
         api.getUserTransactions (userId) 
           .then(res => {
              console.log(res.data)
+              res.data.forEach(block => {
+                this.rows.push({
+                 BlockId: block.block_hash,
+                 PreviousBlock: block.previous_block_hash
+                })
+              })
               this.transactionTable.rows = res.data.map((transaction) => {
               return {
                     Id: transaction.t_id,
-                    TransactionDate: transaction.transaction_date_time,
+                    TransactionDate: transaction.created_date_time,
                     Business: transaction.business_name,
                     Item: transaction.item_name,
-                    Amount: transaction.price,
+                    Amount: transaction.price
               }
-          })
+            })
           })
 
         api.getBusinesses()
@@ -209,7 +239,7 @@ export default {
         })
         api.getPreviousHash()
         .then(res => {
-          this.previous_hash = res.data[0].previous_block_hash
+          this.previous_hash = res.data[0].block_hash
           console.log(this.previous_hash)
         })
     },
@@ -256,6 +286,12 @@ export default {
       console.log(params)
       api.addTransaction(params) 
         .then(res => {
+          this.$toasted.show('Transaction successfully processed', {
+            theme: 'toasted-primary',
+            type: 'success',
+            position: 'bottom-center',
+            duration: 2000
+          })
           this.fetch()
         })
     }
@@ -294,6 +330,13 @@ export default {
   letter-spacing: 1px;
 }
 
+.block{
+  color:#6f76da;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
 .createTransaction{
   color:#6f76da;
   font-weight: 700;
@@ -302,6 +345,13 @@ export default {
 }
 .transaction{
   padding-left:20%;
+}
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 </style>
