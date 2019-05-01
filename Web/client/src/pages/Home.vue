@@ -60,7 +60,7 @@
           </b-col>
 
           <b-col>
-             Item Price - ${{this.search.itemSelect.value}}
+             Item Price - ${{this.itemPrice}}
           </b-col>
           <hr/>
           <b-col>
@@ -77,7 +77,7 @@
 
       </BC-layout-section>
         <div class="transaction">
-         <BC-card style="min-width: 245%;">
+         <BC-card style="min-width: 130%;">
           <div class="transactions">
           RECENT TRANSACTIONS
           <hr/>
@@ -90,7 +90,7 @@
                  <th>Item</th>
                 <th >Amount</th>
               </tr>
-               <tr v-for="item in rows">
+               <tr v-for="item in transactionTable.rows">
                   <td v-for="(value, key) in item">
                 {{value}}
 
@@ -163,125 +163,38 @@ export default {
       },
       date: new Date().toLocaleDateString(),
       userBalance: 0,
-      userNewBalance: 0
+      userFirstName: '',
+      userId: 0,
+      userLastName: '',
+      userNewBalance: 0,
+      items: [],
+      itemPrice: 0,
     }
   },
   methods: {
     fetch () {
-      this.rows = [ {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        },{
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness',
-          Item: 'testItem',
-          Amount: '$5.00'
-        },
-        {
-          Id: '1',
-          TransactionDate: '3/30/2019',
-          Business: 'testBusiness2',
-          Item: 'testItem2',
-          Amount: '$5.00',
-        }]
+      this.rows = []
         var userId = 1
         api.getUserInfo(userId)
           .then(res => {
            console.log(res)
            this.userBalance = res.data[0].balance
+           this.userFirstName = res.data[0].first_name
+           this.userId = 1
+           this.userLastName = res.data[0].last_name
         })
         api.getUserTransactions (userId) 
           .then(res => {
-             // this.transactionTable.rows = res.data
+             console.log(res.data)
+              this.transactionTable.rows = res.data.map((transaction) => {
+              return {
+                    Id: transaction.t_id,
+                    TransactionDate: transaction.transaction_date_time,
+                    Business: transaction.business_name,
+                    Item: transaction.item_name,
+                    Amount: transaction.price,
+              }
+          })
           })
 
         api.getBusinesses()
@@ -306,17 +219,22 @@ export default {
         api.getItems(businessId)
         .then(res => {  
           console.log(res)
+          this.items = res.data
           this.search.itemSelect.options = res.data.map((item) => {
               return {
                 label: item.item_name,
-                value: item.price
+                value: item.item_id
               }
           })
         })
     },  
     handleItemSelect () {
       // set new balance
-      this.userNewBalance = this.userBalance - this.search.itemSelect.value
+      this.items.forEach(item => {
+        if (item.item_id == this.search.itemSelect.value)
+        this.itemPrice = item.price
+      })
+      this.userNewBalance = this.userBalance - this.itemPrice
     },
     CreateTransaction () {
       var TransactionHash = 'randomvalue'
@@ -324,17 +242,18 @@ export default {
       var date = Date()
 
       var params = {
-        itemId: this.item.id, 
-        userId: this.user.id,
-        user_first_name: this.user.first_name,
-        user_last_name: this.user.last_name,
-        user_balance: this.user.balance,
+        itemId: this.search.itemSelect.value, 
+        userId: this.userId,
+        user_first_name: this.userFirstName,
+        user_last_name: this.userLastName,
+        user_balance: this.userBalance,
         previous_block_hash: this.previous_hash,
-        businessId: this.businessSelect.value, 
+        businessId: this.search.businessSelect.value, 
         transactionDateTime: date,
         newBalance: this.userNewBalance,
         previousHash: this.previous_hash
       }
+      console.log(params)
       api.addTransaction(params) 
         .then(res => {
           this.fetch()

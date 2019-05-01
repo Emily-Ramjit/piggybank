@@ -1,4 +1,8 @@
 var path = require('path');
+var crypto = require('crypto')
+const ENCRYPTION_KEY = '11111111111111112222222222222234' // Must be 256 bytes (32 characters)
+const IV_LENGTH = 16; // For AES, this is always 16
+
 const router = require('express').Router();
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('piggy_bank', 'root','newyork96',{
@@ -37,15 +41,15 @@ router.get('/getUserTrans/:userId',(req,res)=>{
     const userId = req.params.userId;
     
     //select user transactions with joins from tables
-    const formattedQuery = `SELECT UT.first_name, UT.middle_initial, UT.last_name, UT.transaction_date_time,
+    const formattedQuery = `SELECT UT.t_id, UT.first_name, UT.middle_initial, UT.last_name, UT.transaction_date_time,
   BI.business_name, BI.item_name, BI.price 
   FROM (SELECT U.first_name, U.middle_initial, U.last_name, 
-    T.item_id, T.u_id, T.b_id, T.transaction_date_time 
+    T.t_id, T.item_id, T.u_id, T.b_id, T.transaction_date_time 
     FROM user U JOIN transaction T ON U.u_id = T.u_id) UT
   JOIN (SELECT B.b_id, B.business_name, I.item_id, I.item_name, I.price
     FROM business B JOIN item I ON B.b_id = I.b_id) BI
     ON UT.item_id = BI.item_id AND UT.b_id = BI.b_id 
-WHERE u_id = "${userId}";`;
+WHERE u_id = "${userId}" order by UT.t_id asc;`;
     executeQuery(formattedQuery).then(userTrans=>{
       res.send(userTrans[0]);
       console.log(`getUserTrans for ${userId}`);
@@ -91,7 +95,7 @@ router.get('/getBal/:userId',(req,res)=>{
 
 router.get('/getPreviousHash',(req,res)=>{
 	const userId = req.params.userId;
-  const formattedQuery = `SELECT previous_block_hash FROM block order by block_id desc
+  const formattedQuery = `SELECT block_hash FROM block order by block_id desc
   LIMIT 1`;
   executeQuery(formattedQuery).then((previousHash)=>{
      res.send(previousHash[0]);
@@ -117,8 +121,8 @@ router.post('/newTransaction',(req,res)=>{
    function generateHash(user_first_name, user_last_name, user_balance, transactionDateTime) {
 
     hashvalue = user_first_name + user_last_name + toString(user_balance) + toString(transactionDateTime); 
-
-    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let iv = crypto.randomBytes(IV_LENGTH);
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
     let finalhash = cipher.update(hashvalue);
     finalhash = Buffer.concat([finalhash, cipher.final()]);
     return finalhash.toString('hex');
@@ -128,24 +132,41 @@ router.post('/newTransaction',(req,res)=>{
 	
 	
 
-   //const transactionHash = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
-   //const hashVersion = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
-   
+    const transactionHash = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
+    const hashVersion = generateHash(user_first_name, user_last_name, user_balance, transactionDateTime)
+    console.log(transactionHash)
 	
 	
+    const blockQuery = `INSERT INTO block (previous_block_hash, previous_block_id, block_hash, created_date_time)
+    values("${previousHash}", "0", "${hashVersion}", "${transactionDateTime}");`;
 	
 	
-	
-  
-  const formattedQuery = `INSERT INTO transaction(item_id, u_id, b_id, transaction_hash,hash_version, block_id,transaction_date_time) 
-  values("${itemId}", "${userId}", "${businessId}", "${transactionHash}","${hashVersion}", "${blockId}", "${transactionDateTime}");`;
-
     const updateBalanceFormattedQuery =
     `UPDATE user SET balance = "${newBalance}" WHERE u_id = "${userId}";
     `;
 
-    const blockQuery = `INSERT INTO block(previous_block_hash, transaction_hash, hash_version, transaction_date_time)
-    values("${previousHash}, ${transactionHash}", "${hashVersion}", "${transactionDateTime}");`;
+
+       //insert into block table
+  executeQuery(blockQuery).then(insertRes=>{
+    console.log("Inserting into block table: ", insertRes);
+
+    const lastBlockQuery = `SELECT block_id FROM block order by block_id desc
+    LIMIT 1`;
+   // var blockId = JSON.stringify(insertRes[0])
+     // get last block id 
+     executeQuery(lastBlockQuery).then(getRes => {
+      
+      // console.log(JSON.parse(getRes[0]))
+      // var blockId = JSON.parse(getRes[0]);
+      // blockId = JSON.stringify(blockId)
+      // console.log(blockId)
+
+      console.log(JSON.parse(insertRes[0]));
+      var blockId = JSON.parse(insertRes[0])
+  const formattedQuery = `INSERT INTO transaction(item_id, u_id, b_id, transaction_hash,hash_version, block_id,transaction_date_time) 
+  values("${itemId}", "${userId}", "${businessId}", "${transactionHash}","${hashVersion}", "${blockId}", "${transactionDateTime}");`;
+
+
 
   //insert into transaction table
   executeQuery(formattedQuery).then(insertResult =>{
@@ -155,9 +176,6 @@ router.post('/newTransaction',(req,res)=>{
     executeQuery(updateBalanceFormattedQuery).then(updateStatus=>{
       console.log("updateBalance status: ",updateStatus);
 
-      //insert into block table
-      executeQuery(blockQuery).then(insertRes=>{
-        console.log("Inserting into block table: ", insertRes);
 
         res.send({
           "insertTransaction": insertResult,
@@ -166,6 +184,7 @@ router.post('/newTransaction',(req,res)=>{
         });
 
       });
+     });
     });   
   });
 });
