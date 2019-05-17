@@ -8,7 +8,7 @@ var cors = require('cors');
 // var sqlDriver = require('mysql');
 var path = require('path');
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('piggy_bank', 'root','newyork96',{
+const sequelize = new Sequelize('piggy_bank', 'root','',{
   host: 'localhost',
   dialect: 'mysql'
 });
