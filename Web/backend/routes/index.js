@@ -5,7 +5,7 @@ const IV_LENGTH = 16; // For AES, this is always 16
 
 const router = require('express').Router();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('piggy_bank', 'root','newyork96',{
+const sequelize = new Sequelize('piggy_bank', 'root','',{
   host: 'localhost',
   dialect: 'mysql'
 });
