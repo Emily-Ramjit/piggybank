@@ -18,7 +18,7 @@
   "homepage": "https://github.com/karkay/piggybank#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5",
     "path": "^0.12.7",
